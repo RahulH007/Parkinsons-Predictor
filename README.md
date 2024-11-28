@@ -7,6 +7,6 @@ Speech and audio-based biomarkers have emerged as promising tools for early PD d
 
 
 
-##By
+## By
 Bramha Bajannavar
 Rahul Hongekar
