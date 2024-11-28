@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkinson's Prediction System</title>
+    <style>
+        :root {
+            --color-bg: #0a0f1c;
+            --color-primary: #3b82f6;
+            --color-secondary: #6366f1;
+            --color-accent: #10b981;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+        }
+
+        .shape-1 {
+            background: var(--color-primary);
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            background: var(--color-secondary);
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -100px;
+        }
+
+        .shape-3 {
+            background: var(--color-accent);
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            left: 60%;
+        }
+
+        .layout {
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-text);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .hero-section {
+            padding-right: 2rem;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .login-options {
+            display: grid;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .login-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .btn-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1rem;
+        }
+
+        .btn-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            background: var(--gradient-primary);
+        }
+
+        .btn-text {
+            color: var(--color-text);
+            font-weight: 600;
+            font-size: 1.125rem;
+            letter-spacing: 0.01em;
+        }
+
+        .login-btn.hospital .btn-icon {
+            background: var(--gradient-primary);
+        }
+
+        .login-btn.patient .btn-icon {
+            background: var(--gradient-accent);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-section {
+                padding-right: 0;
+                text-align: center;
+            }
+
+            .title {
+                font-size: 3rem;
+            }
+
+            .login-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .layout {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.25rem;
+            }
+
+            .nav {
+                gap: 1rem;
+            }
+
+            .login-options {
+                gap: 1rem;
+            }
+
+            .login-btn {
+                padding: 1rem;
+            }
+
+            .btn-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="layout">
+        <header class="header">
+            <nav class="nav">
+                <a href="https://github.com/Bramha-Bajannavar/41_Last-Minute-rankers_Health-and-Wellness.git" class="nav-link">About</a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="hero-section">
+                <h1 class="title">Parkinson's Prediction System</h1>
+                <p class="subtitle">Welcome to the future of early detection</p>
+            </div>
+
+            <div class="login-section">
+                <h2 class="section-title">Select your role to continue</h2>
+                <div class="login-options">
+                    <a href="{% url 'hospital_login' %}">
+                        <button class="login-btn hospital">
+                            <div class="btn-content">
+                                <span class="btn-icon hospital-icon"></span>
+                                <span class="btn-text">Hospital Login</span>
+                            </div>
+                        </button>
+                    </a>
+                    <a href="{% url 'patient_login' %}">
+                        <button class="login-btn patient">
+                            <div class="btn-content">
+                                <span class="btn-icon patient-icon"></span>
+                                <span class="btn-text">Patient Login</span>
+                            </div>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

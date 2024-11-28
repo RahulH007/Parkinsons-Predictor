@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Login</title>
+    <style>
+        :root {
+            --color-bg: #0a0f1c;
+            --color-primary: #3b82f6;
+            --color-secondary: #6366f1;
+            --color-accent: #10b981;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text);
+            position: relative;
+            overflow-x: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+        }
+
+        .background-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+        }
+
+        .shape-1 {
+            background: var(--color-primary);
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            background: var(--color-secondary);
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -100px;
+        }
+
+        .shape-3 {
+            background: var(--color-accent);
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            left: 60%;
+        }
+
+        .brand-section {
+            padding: 3rem;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+        }
+
+        .login-section {
+            padding: 3rem 4rem;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--color-text);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .signup-link {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: var(--color-text-secondary);
+        }
+
+        .signup-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: var(--color-secondary);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-section {
+                display: none;
+            }
+
+            .login-section {
+                padding: 2rem;
+            }
+
+            .login-container {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <section class="brand-section">
+        <div class="brand-content">
+            <h1 class="brand-title">Welcome Back</h1>
+            <p class="brand-description">
+                Access your account to manage your profile, track your progress, and explore our platform's features. We're excited to have you back!
+            </p>
+        </div>
+    </section>
+
+    <section class="login-section">
+        <div class="login-container">
+            <h2 class="login-title">Sign In</h2>
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                <button type="submit" class="login-button">Sign In</button>
+            </form>
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            {% if form.errors %}
+                <p style="color: red;">{{ form.errors }}</p>
+            {% endif %}
+            <div class="signup-link">
+                Don't have an account? <a href="{% url 'signup' %}">Sign up now</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

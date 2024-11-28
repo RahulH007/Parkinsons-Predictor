@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Parameter Analysis Form</title>
+    <style>
+        :root {
+            --color-bg: #0a0f1c;
+            --color-primary: #3b82f6;
+            --color-secondary: #6366f1;
+            --color-accent: #10b981;
+            --color-error: #ef4444;
+            --color-success: #10b981;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .parameter-group {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .group-title {
+            color: var(--color-text);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            padding-right: 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--color-text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-group.valid input {
+            border-color: var(--color-success);
+        }
+
+        .form-group.invalid input {
+            border-color: var(--color-error);
+        }
+
+        .validation-icon {
+            position: absolute;
+            right: 0.8rem;
+            top: 2.3rem;
+            width: 20px;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-group.valid .validation-icon {
+            opacity: 1;
+            color: var(--color-success);
+        }
+
+        .error-message {
+            position: absolute;
+            left: 0;
+            bottom: -1.5rem;
+            font-size: 0.875rem;
+            color: var(--color-error);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-group.invalid .error-message {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .submit-button {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 2rem auto 0;
+            padding: 1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .submit-button.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .form-result.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        .form-result.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            color: var(--color-error);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Voice Parameter Analysis Form</h1>
+            <p class="subtitle">Enter acoustic parameters for voice analysis</p>
+        </header>
+
+        <form id="parameterForm" class="form-container">
+            <!-- Fundamental Frequency Parameters -->
+            <div class="parameter-group">
+                <h3 class="group-title">Fundamental Frequency Parameters</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="MDVP_Fo">MDVP:Fo(Hz)</label>
+                        <input type="number" id="MDVP_Fo" name="MDVP_Fo" required min="0" max="1000" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid frequency (0-1000 Hz)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_Fhi">MDVP:Fhi(Hz)</label>
+                        <input type="number" id="MDVP_Fhi" name="MDVP_Fhi" required min="0" max="1000" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid frequency (0-1000 Hz)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_Flo">MDVP:Flo(Hz)</label>
+                        <input type="number" id="MDVP_Flo" name="MDVP_Flo" required min="0" max="1000" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid frequency (0-1000 Hz)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jitter Parameters -->
+            <div class="parameter-group">
+                <h3 class="group-title">Jitter Parameters</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="MDVP_Jitter">MDVP:Jitter(%)</label>
+                        <input type="number" id="MDVP_Jitter" name="MDVP_Jitter" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid percentage (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_Jitter_Abs">MDVP:Jitter(Abs)</label>
+                        <input type="number" id="MDVP_Jitter_Abs" name="MDVP_Jitter_Abs" required min="0" max="1" step="0.000001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-1)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_RAP">MDVP:RAP</label>
+                        <input type="number" id="MDVP_RAP" name="MDVP_RAP" required min="0" max="1" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-1)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_PPQ">MDVP:PPQ</label>
+                        <input type="number" id="MDVP_PPQ" name="MDVP_PPQ" required min="0" max="1" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-1)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Jitter_DDP">Jitter:DDP</label>
+                        <input type="number" id="Jitter_DDP" name="Jitter_DDP" required min="0" max="1" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shimmer Parameters -->
+            <div class="parameter-group">
+                <h3 class="group-title">Shimmer Parameters</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="MDVP_Shimmer">MDVP:Shimmer</label>
+                        <input type="number" id="MDVP_Shimmer" name="MDVP_Shimmer" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid percentage (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_Shimmer_dB">MDVP:Shimmer(dB)</label>
+                        <input type="number" id="MDVP_Shimmer_dB" name="MDVP_Shimmer_dB" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-100 dB)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Shimmer_APQ3">Shimmer:APQ3</label>
+                        <input type="number" id="Shimmer_APQ3" name="Shimmer_APQ3" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Shimmer_APQ5">Shimmer:APQ5</label>
+                        <input type="number" id="Shimmer_APQ5" name="Shimmer_APQ5" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="MDVP_APQ">MDVP:APQ</label>
+                        <input type="number" id="MDVP_APQ" name="MDVP_APQ" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Shimmer_DDA">Shimmer:DDA</label>
+                        <input type="number" id="Shimmer_DDA" name="Shimmer_DDA" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-100)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Harmonicity and Pitch Parameters -->
+            <div class="parameter-group">
+                <h3 class="group-title">Harmonicity and Pitch Parameters</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="NHR">NHR (Noise-to-Harmonics Ratio)</label>
+                        <input type="number" id="NHR" name="NHR" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid ratio (0-100)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="HNR">HNR (Harmonics-to-Noise Ratio)</label>
+                        <input type="number" id="HNR" name="HNR" required min="0" max="100" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid ratio (0-100)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nonlinear Measures -->
+            <div class="parameter-group">
+                <h3 class="group-title">Nonlinear Measures</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="RPDE">RPDE (Recurrence Period Density Entropy)</label>
+                        <input type="number" id="RPDE" name="RPDE" required min="0" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-10)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="DFA">DFA (Detrended Fluctuation Analysis)</label>
+                        <input type="number" id="DFA" name="DFA" required min="0" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-10)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="spread1">Spread1</label>
+                        <input type="number" id="spread1" name="spread1" required min="-10" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (-10 to 10)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="spread2">Spread2</label>
+                        <input type="number" id="spread2" name="spread2" required min="-10" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (-10 to 10)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="D2">D2 (Correlation Dimension)</label>
+                        <input type="number" id="D2" name="D2" required min="0" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-10)</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="PPE">PPE (Pitch Period Entropy)</label>
+                        <input type="number" id="PPE" name="PPE" required min="0" max="10" step="0.001">
+                        <svg class="validation-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="error-message">Please enter a valid value (0-10)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="formResult" class="form-result"></div>
+            <button type="submit" id="submitButton" class="submit-button">Submit Parameters</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('parameterForm');
+            const submitButton = document.getElementById('submitButton');
+            const inputs = form.querySelectorAll('input');
+            const formResult = document.getElementById('formResult');
+
+            const validateInput = (input) => {
+                const value = parseFloat(input.value);
+                const min = parseFloat(input.min);
+                const max = parseFloat(input.max);
+                const formGroup = input.closest('.form-group');
+                
+                if (input.value === '' || isNaN(value) || value < min || value > max) {
+                    formGroup.classList.remove('valid');
+                    formGroup.classList.add('invalid');
+                    return false;
+                } else {
+                    formGroup.classList.remove('invalid');
+                    formGroup.classList.add('valid');
+                    return true;
+                }
+            };
+
+            const checkFormValidity = () => {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!validateInput(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                if (isValid) {
+                    submitButton.classList.add('visible');
+                } else {
+                    submitButton.classList.remove('visible');
+                }
+                
+                return isValid;
+            };
+
+            inputs.forEach(input => {
+                ['input', 'blur'].forEach(eventType => {
+                    input.addEventListener(eventType, () => {
+                        validateInput(input);
+                        checkFormValidity();
+                    });
+                });
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                try {
+                    const formData = new FormData(form);
+                    const data = [
+                        parseFloat(formData.get('MDVP_Fo') || 0),     // fo (Hz)
+                        parseFloat(formData.get('MDVP_Fhi') || 0),    // fhi (Hz)
+                        parseFloat(formData.get('MDVP_Flo') || 0),    // flo (Hz)
+                        parseFloat(formData.get('MDVP_Jitter') || 0), // jitter (%)
+                        parseFloat(formData.get('MDVP_Jitter_Abs') || 0), // jitter (abs)
+                        parseFloat(formData.get('MDVP_RAP') || 0),    // RAP
+                        parseFloat(formData.get('MDVP_PPQ') || 0),    // PPQ
+                        parseFloat(formData.get('Jitter_DDP') || 0),  // DDP
+                        parseFloat(formData.get('MDVP_Shimmer') || 0), // SHIMMER
+                        parseFloat(formData.get('MDVP_Shimmer_dB') || 0), // SHIMMER (dB)
+                        parseFloat(formData.get('Shimmer_APQ3') || 0), // APQ3
+                        parseFloat(formData.get('Shimmer_APQ5') || 0), // APQ5
+                        parseFloat(formData.get('MDVP_APQ') || 0),    // MDVP APQ
+                        parseFloat(formData.get('Shimmer_DDA') || 0), // SHIMMER DDA
+                        parseFloat(formData.get('NHR') || 0),         // NHR
+                        parseFloat(formData.get('HNR') || 0),         // HNR
+                        parseFloat(formData.get('RPDE') || 0),        // RPDE
+                        parseFloat(formData.get('DFA') || 0),         // DFA
+                        parseFloat(formData.get('spread1') || 0),     // spread1
+                        parseFloat(formData.get('spread2') || 0),     // spread2
+                        parseFloat(formData.get('D2') || 0),          // D2
+                        parseFloat(formData.get('PPE') || 0)          // PPE
+                    ];
+
+                    // Send the data to the backend
+                    const response = await fetch('http://127.0.0.1:8000/process-parameters/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ features: data }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        formResult.innerHTML = `Prediction Probability: ${result.prediction}`;
+                        formResult.className = 'form-result success';
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    formResult.innerHTML = 'Error processing the data.';
+                    formResult.className = 'form-result error';
+                    console.error('Submission error:', error);
+                }
+            });
+
+
+
+            // Initial form validation
+            checkFormValidity();
+        });
+    </script>
+</body>
+</html>

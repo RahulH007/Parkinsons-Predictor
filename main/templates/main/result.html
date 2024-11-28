@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .result-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .result-container h1 {
+            margin-bottom: 1rem;
+        }
+        .result-container p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>Diagnosis Result</h1>
+        <p>The likelihood of Parkinson's is: <strong>{{ result|floatformat:2 }}</strong></p>
+    </div>
+</body>
+</html>

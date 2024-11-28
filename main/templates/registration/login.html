@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: rgb(208, 208, 222); /* Set the background color */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Header styles */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        /* Login box styles */
+        .login-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Button styles */
+        button {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Signup option styles */
+        .signup-option {
+            margin-top: 20px;
+        }
+
+        .signup-option a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .signup-option a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Patient Login</h1>
+    </header>
+    <main>
+        <section class="login-box">
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            {% if form.errors %}
+                <p style="color: red;">{{ form.errors }}</p>
+            {% endif %}
+            <div class="signup-option">
+                <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

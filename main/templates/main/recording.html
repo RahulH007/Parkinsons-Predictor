@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recording & Chat</title>
+    <style>
+        :root {
+            --color-bg: #0a0f1c;
+            --color-primary: #3b82f6;
+            --color-secondary: #6366f1;
+            --color-accent: #10b981;
+            --color-text: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--color-bg);
+            color: var(--color-text);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+        }
+
+        .shape-1 {
+            background: var(--color-primary);
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            background: var(--color-secondary);
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -100px;
+        }
+
+        .shape-3 {
+            background: var(--color-accent);
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            left: 60%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .record-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            color: var(--color-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .record-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .recording-indicator {
+            width: 12px;
+            height: 12px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status {
+            text-align: center;
+            color: var(--color-text-secondary);
+            margin: 1rem 0;
+        }
+
+        .reading-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .reading-title {
+            color: var(--color-text);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .reading-text {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .disclaimer {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .chat-container {
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            margin-left: auto;
+            background: var(--gradient-primary);
+            color: var(--color-text);
+        }
+
+        .chat-message.assistant {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--color-primary);
+        }
+
+        .send-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient-accent);
+            color: var(--color-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Recording Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="title">Voice Recording</h2>
+                    <div id="timer" class="timer">25</div>
+                </div>
+
+                <button id="recordButton" class="record-button">
+                    <span class="recording-indicator hidden"></span>
+                    <span>Start Recording</span>
+                </button>
+
+                <div id="status" class="status">Ready to record</div>
+                
+                <div class="reading-section">
+                    <h3 class="reading-title">Read the following:</h3>
+                    <p class="reading-text">
+                        The quick brown fox jumps over the lazy dog near a quiet riverbank. As the sun sets, the calm breeze rustles the leaves, creating a soothing sound. In the distance, a clock tower chimes, marking the end of another day. Every moment counts, and every word we speak carries a meaning, shaping the world around us. Speak clearly, and let your voice express the thoughts within your mind.
+                    </p>
+                    <p class="disclaimer">
+                        Disclaimer: This product is in the testing phase and may not provide accurate results. Use with caution and consult a healthcare professional.
+                    </p>
+                </div>
+
+                <div id="result" class="status hidden"></div>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="card">
+                <h2 class="title">Chat Assistant</h2>
+                
+                <div id="chatBox" class="chat-container">
+                    <div class="messages-container"></div>
+                </div>
+
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" 
+                           class="chat-input"
+                           placeholder="Type your message...">
+                    <button id="sendButton" class="send-button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('recordButton').addEventListener('click', async () => {
+            const button = document.getElementById('recordButton');
+            const timerElement = document.getElementById('timer');
+            const statusElement = document.getElementById('status');
+            const resultElement = document.getElementById('result');
+            const recordingIndicator = document.querySelector('.recording-indicator');
+            let timeLeft = 25;
+            let isRecording = button.querySelector('span:last-child').textContent === 'Stop Recording';
+
+            if (!isRecording) {
+                isRecording = true;
+                button.querySelector('span:last-child').textContent = 'Stop Recording';
+                recordingIndicator.classList.remove('hidden');
+                statusElement.textContent = 'Recording in progress...';
+                
+                const timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        timerElement.textContent = timeLeft;
+                    } else {
+                        clearInterval(timerInterval);
+                        stopRecording();
+                    }
+                }, 1000);
+
+                try {
+                    const response = await fetch("{% url 'record_voice' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                    });
+                    const result = await response.json();
+                    resultElement.textContent = result.prediction;
+                    resultElement.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error:', error);
+                    statusElement.textContent = 'Error occurred during recording';
+                    statusElement.style.color = '#ef4444';
+                }
+            } else {
+                stopRecording();
+            }
+
+            function stopRecording() {
+                isRecording = false;
+                button.querySelector('span:last-child').textContent = 'Start Recording';
+                recordingIndicator.classList.add('hidden');
+                statusElement.textContent = 'Recording completed';
+                statusElement.style.color = '';
+            }
+        });
+
+        document.getElementById('sendButton').addEventListener('click', async () => {
+            const chatInput = document.getElementById('chatInput');
+            const chatBox = document.getElementById('chatBox');
+            const message = chatInput.value.trim();
+
+            if (!message) return;
+
+            appendMessage(message, 'user');
+            chatInput.value = '';
+
+            try {
+                const response = await fetch("{% url 'chatbot_api' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+                const result = await response.json();
+                appendMessage(result.response, 'assistant');
+            } catch (error) {
+                console.error('Error:', error);
+                appendMessage('Sorry, an error occurred.', 'assistant error');
+            }
+        });
+
+        function appendMessage(content, type) {
+            const chatBox = document.getElementById('chatBox');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            messageDiv.textContent = content;
+            chatBox.querySelector('.messages-container').appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendButton').click();
+            }
+        });
+    </script>
+</body>
+</html>
